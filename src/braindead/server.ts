@@ -2,18 +2,21 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 
-import { DataStorageFactory, RequestParse, TRequestMethod, IRequest, THandleRequest } from './model'
+import {
+    DataStorageFactory,
+    RequestParse,
+    TRequestMethod,
+    THandleNonGetRequest,
+    THandleGetRequest,
+} from './model';
 import { dataInstances } from './data-instances';
-import { parse } from 'querystring';
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
 app.use(bodyParser.json());
 
-const a = new DataStorageFactory('users'); // put to another file?
-
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {        // app use static???
     res.sendFile(`${__dirname}/frontend'/index.html`);
     // res.sendFile(__dirname + '/index.html');
 });
@@ -54,7 +57,11 @@ const verifyDataStorage = (dataStorageName: string, method: TRequestMethod): voi
 
 }
 
-const handleRequest: THandleRequest = (method, req) => {
+const handleGetRequest: THandleGetRequest = (req) => { // add logic
+    return;
+};
+
+const handleNonGetRequest: THandleNonGetRequest = (method, req) => {
     const parsedRequest = parseRequest(req.params[0]);
 
     verifyDataStorage(parsedRequest[0], method);
@@ -111,27 +118,27 @@ app.route('*')      //add parent/child conditions/parsing
         //     dataInstances[parsedRequest[0]].postChild(parsedRequest[1], req.body);
         // }
 
-        handleRequest('post', req);
+        handleNonGetRequest('post', req);
     })
     .get((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         // console.log('post', req.route);
-        handleRequest('post', req);
+        handleNonGetRequest('post', req);
 
     })
     .put((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         console.log('post', req.route);
-        handleRequest('post', req);
+        handleNonGetRequest('post', req);
 
     })
     .delete((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         console.log('post', req.route);
-        handleRequest('post', req);
+        handleNonGetRequest('post', req);
 
     })
 

@@ -1,19 +1,23 @@
-import { ParamsDictionary } from '../../node_modules/@types/express-serve-static-core/index'
-export interface IRequest {
+import { ParamsDictionary } from '../../node_modules/@types/express-serve-static-core/index';
+
+interface IRequest {
     // params: string,
     params: ParamsDictionary;//ny[];
     body: any
-}
+};
+
 export type TRequestMethod = 'get' | 'put' | 'post' | 'delete';
 
 export interface IDataInstances {
     [key: string]: DataStorageFactory
-}
+};
 
 type IParsedRequest = [string, string?]; // change to {storage: string, childpath ||  propertyPath || path?: string}
 export type RequestParse = (parameter: string) => IParsedRequest;
 
-export type THandleRequest = (method: TRequestMethod, req: IRequest) => void
+export type THandleNonGetRequest = (method: TRequestMethod, req: IRequest) => void
+
+export type THandleGetRequest = (request: IRequest) => any;
 
 
 
