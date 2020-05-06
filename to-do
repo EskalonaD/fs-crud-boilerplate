@@ -14,6 +14,11 @@ add documentation on features;
 rename DataStorage class to some factory-class and put it in correct folder;
 add crud logic directly in class????
 add appropriate name to errors
+encapsulate request handlers in separate module/class??
+test server's ability to handle different kind of request and remove consoles and comments;
+add responses in server.ts
+update namings in server.ts
+remove nodemon.json??s
 
 /** Bugs issues
 

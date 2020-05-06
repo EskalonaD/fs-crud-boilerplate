@@ -1,15 +1,19 @@
-// interface IRequest {
-//     // params: string,
-//     params: string,
-// }
+import { ParamsDictionary } from '../../node_modules/@types/express-serve-static-core/index'
+export interface IRequest {
+    // params: string,
+    params: ParamsDictionary;//ny[];
+    body: any
+}
+export type TRequestMethod = 'get' | 'put' | 'post' | 'delete';
 
 export interface IDataInstances {
     [key: string]: DataStorageFactory
 }
 
-type IParsedRequest = [string, string?];
+type IParsedRequest = [string, string?]; // change to {storage: string, childpath ||  propertyPath || path?: string}
 export type RequestParse = (parameter: string) => IParsedRequest;
 
+export type THandleRequest = (method: TRequestMethod, req: IRequest) => void
 
 
 
@@ -17,31 +21,26 @@ export type RequestParse = (parameter: string) => IParsedRequest;
 
 
 
-/**
- * two level data
- */
+
 import fs from 'fs';
+import { dataInstances } from './data-instances';
 
 export class DataStorageFactory {
-    constructor(name: string, schema, baseData, private type) { // schema IS base data // schema is object for now
+    constructor (private name: string) { // schema IS base data // schema is object for now
 
         const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
         this.filePath = `${__dirname}/data/${name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
-            : fs.existsSync(baseFilePath)
+            : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
                 ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
                 : null;
 
-        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8'); // mb null instead of {}?
-
-
-        if (typeof schema === 'object') this.schemaFields = Object.keys(schema);
+        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8'); // mb null instead of {}? // does it needed?
 
     }
 
-    private schemaFields;       //paste on post if none is provided at initialization?/
 
     protected filePath: string;
     protected _data: any;
@@ -64,13 +63,7 @@ export class DataStorageFactory {
         console.log('data saved')
     }
 
-    post(data: object) { //payload: any
-        if(this.schemaFields.every(prop => data.hasOwnProperty(prop))) {
-
-        }
-        else {
-            throw Error;
-        }
+    post(payload: any) {
 
     }
 
@@ -85,6 +78,7 @@ export class DataStorageFactory {
     delete() {
 
         fs.unlinkSync(this.filePath);
+        delete dataInstances[this.name];
 
     }
 
