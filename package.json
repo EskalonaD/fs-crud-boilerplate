@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "crud": "nodemon src/server.ts"
+    "braindead": "nodemon src/braindead/server.ts",
+    "strict": "nodemon src/strict/server.ts",
+    "regular": "nodemon src/regular/server.ts"
   },
   "repository": {
     "type": "git",

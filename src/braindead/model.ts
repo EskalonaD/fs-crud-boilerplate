@@ -1,3 +1,22 @@
+// interface IRequest {
+//     // params: string,
+//     params: string,
+// }
+
+export interface IDataInstances {
+    [key: string]: DataStorageFactory
+}
+
+type IParsedRequest = [string, string?];
+export type RequestParse = (parameter: string) => IParsedRequest;
+
+
+
+
+
+
+
+
 /**
  * two level data
  */
@@ -45,7 +64,7 @@ export class DataStorageFactory {
         console.log('data saved')
     }
 
-    post(data: object) {
+    post(data: object) { //payload: any
         if(this.schemaFields.every(prop => data.hasOwnProperty(prop))) {
 
         }
@@ -55,7 +74,7 @@ export class DataStorageFactory {
 
     }
 
-    put(){
+    put(payload: any){
 
     }
 
@@ -69,19 +88,24 @@ export class DataStorageFactory {
 
     }
 
-    postChild() {
+    // pass req.params parse and use for some sort like lodash arguments for multiple level child use?
+
+
+    getChild(path: string) {
 
     }
 
-    getChild() {
+
+
+    deleteChild(path: string) {
 
     }
 
-    putChild() {
+    postChild(path: string, payload: any) {
 
     }
 
-    deleteChild() {
+    putChild(path: string, payload: any) {
 
     }
 
