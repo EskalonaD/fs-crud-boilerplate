@@ -20,23 +20,7 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {        // app use static???
     res.sendFile(`${__dirname}/frontend'/index.html`);
-    // res.sendFile(__dirname + '/index.html');
 });
-
-// app.post('/quotes', (req, res) => {
-//     console.log('post', req.body);
-//     // console.log('post', req);
-//     console.log('post', req.route);
-// });
-
-// app.put('/quotes', (req, res) => {
-//     console.log('put', req.body);
-// });
-
-// app.delete('/quotes', (req, res) => {
-//     console.log('delete', req.body);
-// })
-
 
 //move funtions to class? middlewares?? functions-folder??
 const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
@@ -79,14 +63,14 @@ const handleRequest: HandleRequest = (method, req) => {
 };
 
 // '/api/' parsing??? ignore??
-const parseEndpoint: RequestParse = (endpoint) => { //change parameter name
+const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
     console.log(endpoint);
 
-    const propertiesPath = endpoint?.match(/^.*?\//)[0]; // remove '/' from match-return // check regexp correctness
-    if (propertiesPath) {
-        parsedRequest.storage = propertiesPath[0];
-        parsedRequest.propertiesPath = endpoint.replace(`${propertiesPath[0]}/`, '');
+    const parsedStorage = endpoint?.match(/^.*?\//)[0]; // remove '/' from match-return // check regexp correctness // change regexp to (x) => y;
+    if (parsedStorage) {
+        parsedRequest.storage = parsedStorage;
+        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '');
 
         return parsedRequest;
     }
@@ -95,46 +79,27 @@ const parseEndpoint: RequestParse = (endpoint) => { //change parameter name
     return parsedRequest;
 };
 
-
-
-
-app.route('*')      //add parent/child conditions/parsing
-    .post((req, res) => { //if first - create dataStorage obj
+app.route('*')
+    .post((req, res) => {
         console.log('post', req.body);
-        // console.log('post', req);
-        // console.log('post', req.route);
         console.log('post', req.params);
-        // console.log();
-
-        // const parsedRequest = parseRequest(req.params[0]);
-        // if (parsedRequest.length === 1) {
-        //     dataInstances[parsedRequest[0]].post(req.body);
-        // }
-        // else {
-        //     dataInstances[parsedRequest[0]].postChild(parsedRequest[1], req.body);
-        // }
-
-
         const responseData = handleRequest('post', req);
     })
     .get((req, res) => {
-        console.log('post', req.body);
-        // console.log('post', req);
-        // console.log('post', req.route);
+        console.log('get', req.body);
+        console.log('get', req.params);
         const responseData = handleRequest('get', req);
 
     })
     .put((req, res) => {
-        console.log('post', req.body);
-        // console.log('post', req);
-        console.log('post', req.route);
+        console.log('put', req.body);
+        console.log('put', req.params);
         const responseData = handleRequest('put', req);
 
     })
     .delete((req, res) => {
-        console.log('post', req.body);
-        // console.log('post', req);
-        console.log('post', req.route);
+        console.log('delete', req.body);
+        console.log('delete', req.params);
         const responseData = handleRequest('delete', req);
 
     })
