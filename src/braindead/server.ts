@@ -3,13 +3,15 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 
 import {
-    DataStorageFactory,
     RequestParse,
-    TRequestMethod,
-    THandleNonGetRequest,
-    THandleGetRequest,
+    RequestMethod,
+    HandleRequest,
+    ResponseStatus,
+    ResponseData,
+    ParsedRequest,
 } from './model';
 import { dataInstances } from './data-instances';
+import { DataStorageFactory } from './DataStorageFactory';
 
 const app = express();
 
@@ -36,16 +38,12 @@ app.get('/', (req, res) => {        // app use static???
 // })
 
 
-//move funtions to class? middlewares??
-const verifyDataStorage = (dataStorageName: string, method: TRequestMethod): void => {
+//move funtions to class? middlewares?? functions-folder??
+const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
     const isStorageExist = dataInstances.hasOwnProperty(dataStorageName);
     const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
     // if (!isStorageExist && !isFileStorageExist && method !== 'post') {
     if (!isStorageExist) {
-        // throw new Error;
-
-
-        // if ()
         if (isFileStorageExist || method === 'post') {
             dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
         }
@@ -53,50 +51,48 @@ const verifyDataStorage = (dataStorageName: string, method: TRequestMethod): voi
             throw new Error;
         }
     }
-
-
 }
 
-const handleGetRequest: THandleGetRequest = (req) => { // add logic
-    return;
-};
+const handleRequest: HandleRequest = (method, req) => {
+    const parsedRequest = parseEndpoint(req.params[0]);
+    let data: any;
+    let response: ResponseData = <any>{};
 
-const handleNonGetRequest: THandleNonGetRequest = (method, req) => {
-    const parsedRequest = parseRequest(req.params[0]);
+    try {
+        verifyDataStorage(parsedRequest.storage, method);
+        const storage = dataInstances[parsedRequest.storage];
+        data = parsedRequest.propertiesPath
+            ? storage[method + 'Child'](parsedRequest.propertiesPath, req.body)
+            : storage[method](req.body);
+        response.status = ResponseStatus.ok;
 
-    verifyDataStorage(parsedRequest[0], method);
-
-    if (parsedRequest.length === 1) {
-        dataInstances[parsedRequest[0]][method](req.body);
+        if (data !== undefined) {
+            response.data = data;
+        }
     }
-    else {
-        dataInstances[parsedRequest[0]][method + 'Child'](parsedRequest[1], req.body);
+    catch(e) {
+        response.status = ResponseStatus.error;
+        response.errorMessage = e.message; // or e.name?????
     }
-};
 
-
-const handleErrors = (func: Function): void => {  //decorator????
-    // try { func}
+    return response;
 };
 
 // '/api/' parsing??? ignore??
-const parseRequest: RequestParse = (params) => { //change parameter name
-    console.log(params);
+const parseEndpoint: RequestParse = (endpoint) => { //change parameter name
+    const parsedRequest: ParsedRequest = <any>{}
+    console.log(endpoint);
 
-    const awesomeVariable = params?.match(/^.*?\//)[0]; // find appropriate name // remove '/' from match-return
-    if (awesomeVariable) {
-        return [awesomeVariable[0], params.replace(`${awesomeVariable[0]}/`, '')]
+    const propertiesPath = endpoint?.match(/^.*?\//)[0]; // remove '/' from match-return // check regexp correctness
+    if (propertiesPath) {
+        parsedRequest.storage = propertiesPath[0];
+        parsedRequest.propertiesPath = endpoint.replace(`${propertiesPath[0]}/`, '');
 
-
-
-        // const splittedParams = params.split('/');
-        // return [splittedParams[0], splittedParams.splice(1).join]
-
-
-
-        // return [params.match(/^.*?\//)
+        return parsedRequest;
     }
-    return [params]
+
+    parsedRequest.storage = endpoint;
+    return parsedRequest;
 };
 
 
@@ -118,27 +114,28 @@ app.route('*')      //add parent/child conditions/parsing
         //     dataInstances[parsedRequest[0]].postChild(parsedRequest[1], req.body);
         // }
 
-        handleNonGetRequest('post', req);
+
+        const responseData = handleRequest('post', req);
     })
     .get((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         // console.log('post', req.route);
-        handleNonGetRequest('post', req);
+        const responseData = handleRequest('get', req);
 
     })
     .put((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         console.log('post', req.route);
-        handleNonGetRequest('post', req);
+        const responseData = handleRequest('put', req);
 
     })
     .delete((req, res) => {
         console.log('post', req.body);
         // console.log('post', req);
         console.log('post', req.route);
-        handleNonGetRequest('post', req);
+        const responseData = handleRequest('delete', req);
 
     })
 
