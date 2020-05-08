@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { dataInstances } from './data-instances';
+import { DATA_STORAGE_PATH } from './paths';
 
 export class DataStorageFactory {
     constructor (private name: string) { // schema IS base data // schema is object for now

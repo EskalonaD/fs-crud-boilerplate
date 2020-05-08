@@ -13,6 +13,8 @@ encapsulate request handlers in separate module/class??    //utilsClass???
 test server's ability to handle different kind of request and remove consoles and comments;
 add responses in server.ts
 remove nodemon.json??s
+check which data-folder is really needed
+fill paths file
 
 /** Bugs issues
 
