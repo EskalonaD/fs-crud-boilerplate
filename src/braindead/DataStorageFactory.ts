@@ -1,20 +1,23 @@
 import fs from 'fs';
+import * as _ from 'lodash';
+
 import { dataInstances } from './data-instances';
-import { DATA_STORAGE_PATH } from './paths';
+import { config } from './configuration';
+// import { DATA_STORAGE_PATH } from './paths';
 
 export class DataStorageFactory {
     constructor (private name: string) { // schema IS base data // schema is object for now
 
-        const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
-        this.filePath = `${__dirname}/data/${name}.json`;
+        // const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
+        this.filePath = `${config.data_storage_path}/${name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
-            : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
-                ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
+            // : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
+                // ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
                 : null;
 
-        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8'); // mb null instead of {}? // does it needed?
+        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, 'null', 'utf8'); // mb null instead of {}? // does it needed?
 
     }
 
@@ -24,7 +27,7 @@ export class DataStorageFactory {
     get data() {
         const remoteData = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
 
-        if (this._data !== remoteData) {        // could cause problem if multiple simultenious connections to same file occurs;
+        if (!_.isEqual(this._data, remoteData)) {        // could cause problem if multiple simultenious connections to same file occurs; // deep equal!!!!
             fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8');
         }
 
