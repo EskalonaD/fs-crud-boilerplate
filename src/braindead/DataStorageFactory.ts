@@ -1,21 +1,20 @@
 import fs from 'fs';
+import * as _ from 'lodash';
+
 import { dataInstances } from './data-instances';
-import { DATA_STORAGE_PATH } from './paths';
+import { config } from './configuration';
+
 
 export class DataStorageFactory {
-    constructor (private name: string) { // schema IS base data // schema is object for now
+    constructor (private name: string) {
 
-        const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
-        this.filePath = `${__dirname}/data/${name}.json`;
+        this.filePath = `${config.data_storage_path}/${name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
-            : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
-                ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
-                : null;
+            : null;
 
-        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8'); // mb null instead of {}? // does it needed?
-
+        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, 'null', 'utf8');
     }
 
     protected filePath: string;
@@ -24,7 +23,7 @@ export class DataStorageFactory {
     get data() {
         const remoteData = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
 
-        if (this._data !== remoteData) {        // could cause problem if multiple simultenious connections to same file occurs;
+        if (!_.isEqual(this._data, remoteData)) {
             fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8');
         }
 
@@ -35,7 +34,7 @@ export class DataStorageFactory {
 
     set data(value: any) {
         fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8')
-        this._data = value; // mb will work w\o this line??
+        this._data = value;
         console.log('data saved')
     }
 
@@ -48,7 +47,7 @@ export class DataStorageFactory {
     }
 
     get() {
-        return this.data; //check if this is actually get. check CRUD API info. mby get one item?
+        return this.data;
     }
 
     delete() {
@@ -58,14 +57,9 @@ export class DataStorageFactory {
 
     }
 
-    // pass req.params parse and use for some sort like lodash arguments for multiple level child use?
-
-
     getChild(path: string) {
 
     }
-
-
 
     deleteChild(path: string) {
 

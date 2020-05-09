@@ -15,6 +15,7 @@ add responses in server.ts
 remove nodemon.json??s
 check which data-folder is really needed
 fill paths file
+add documentation
 
 /** Bugs issues
 

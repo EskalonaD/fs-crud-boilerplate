@@ -15,18 +15,16 @@ import { DataStorageFactory } from './DataStorageFactory';
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {        // app use static???
+app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/frontend'/index.html`);
 });
 
-//move funtions to class? middlewares?? functions-folder??
 const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
     const isStorageExist = dataInstances.hasOwnProperty(dataStorageName);
     const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
-    // if (!isStorageExist && !isFileStorageExist && method !== 'post') {
     if (!isStorageExist) {
         if (isFileStorageExist || method === 'post') {
             dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
@@ -56,18 +54,17 @@ const handleRequest: HandleRequest = (method, req) => {
     }
     catch(e) {
         response.status = ResponseStatus.error;
-        response.errorMessage = e.message; // or e.name?????
+        response.errorMessage = e.message;
     }
 
     return response;
 };
 
-// '/api/' parsing??? ignore??
 const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
     console.log(endpoint);
 
-    const parsedStorage = endpoint?.match(/^.*?\//)[0]; // remove '/' from match-return // check regexp correctness // change regexp to (x) => y;
+    const parsedStorage = endpoint?.match(/^.*?\//)[0];
     if (parsedStorage) {
         parsedRequest.storage = parsedStorage;
         parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '');
