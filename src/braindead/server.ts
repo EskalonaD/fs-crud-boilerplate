@@ -13,6 +13,7 @@ import {
 import { dataInstances } from './data-instances';
 import { DataStorageFactory } from './DataStorageFactory';
 
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
@@ -67,10 +68,10 @@ const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
     console.log(endpoint);
 
-    const parsedStorage = endpoint?.match(/^.*?\//)[0]; // remove '/' from match-return // check regexp correctness // change regexp to (x) => y;
+    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)[0];
     if (parsedStorage) {
         parsedRequest.storage = parsedStorage;
-        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '');
+        parsedRequest.propertiesPath = endpoint.replace(`/${parsedStorage}/`, '').replace(/\/$/, '');
 
         return parsedRequest;
     }
@@ -84,24 +85,29 @@ app.route('*')
         console.log('post', req.body);
         console.log('post', req.params);
         const responseData = handleRequest('post', req);
+
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .get((req, res) => {
         console.log('get', req.body);
         console.log('get', req.params);
         const responseData = handleRequest('get', req);
 
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);       //res.json instead of res.send ?!
     })
     .put((req, res) => {
         console.log('put', req.body);
         console.log('put', req.params);
         const responseData = handleRequest('put', req);
 
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .delete((req, res) => {
         console.log('delete', req.body);
         console.log('delete', req.params);
         const responseData = handleRequest('delete', req);
 
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
 
 app.listen(3000, () => console.log('on3000'));
