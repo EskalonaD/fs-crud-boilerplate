@@ -6,19 +6,18 @@ import { config } from './configuration';
 // import { DATA_STORAGE_PATH } from './paths';
 
 export class DataStorageFactory {
-    constructor (private name: string) { // schema IS base data // schema is object for now
+    constructor(private name: string) { // schema IS base data // schema is object for now
 
         // const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
-        this.filePath = `${config.data_storage_path}/${name}.json`;
+        this.filePath = `${config.data_storage_path}/${this.name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
             // : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
-                // ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
-                : null;
+            // ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
+            : {};
 
-        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, 'null', 'utf8'); // mb null instead of {}? // does it needed?
-
+        if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8');
     }
 
     protected filePath: string;
@@ -27,7 +26,9 @@ export class DataStorageFactory {
     get data() {
         const remoteData = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
 
-        if (!_.isEqual(this._data, remoteData)) {        // could cause problem if multiple simultenious connections to same file occurs; // deep equal!!!!
+
+        // need for handling storage[prop] = data cases, cause in that cases getter is used instead of post;
+        if (!_.isEqual(this._data, remoteData)) {
             fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8');
         }
 
@@ -42,39 +43,67 @@ export class DataStorageFactory {
         console.log('data saved')
     }
 
-    post(payload: any) {
+    private validateChildEndpoint(props: string[]): any {
+        let data = this.data;
 
+        props.forEach((el: any, i: number) => {
+            if (i !== props.length - 1 && typeof data[el] !== 'object') {
+                throw new Error;
+            }
+
+            data = data[el];
+        })
     }
 
-    put(payload: any){
-
+    private idGen(): number {
+        return Math.trunc(Math.random() * 10 ** 16);
     }
 
-    get() {
+    post(payload: any): void {
+        this.data[this.idGen()] = payload;
+    }
+
+    put(payload: any): void {
+        this.data = payload
+    }
+
+    get(): any {        // id-param???
         return this.data; //check if this is actually get. check CRUD API info. mby get one item?
     }
 
     delete() {
-
         fs.unlinkSync(this.filePath);
         delete dataInstances[this.name];
-
     }
 
     // pass req.params parse and use for some sort like lodash arguments for multiple level child use?
 
 
-    getChild(path: string) {
+/**
+ * @param path expect string like 'prop/prop1/prop2/etc...'
+ */
+    getChild(path: string): any {
+        const props = path.split('/');
+
+        this.validateChildEndpoint(props);
+        return _.get(this.data, props);
 
     }
 
 
 
-    deleteChild(path: string) {
+    deleteChild(path: string): void {
+        const props = path.split('/');
+        let data: any;
 
+        this.validateChildEndpoint(props);
+
+        const propToDelete = props.pop();
+        data = _.get(this.data, props);
+        delete data[propToDelete];
     }
 
-    postChild(path: string, payload: any) {
+    postChild(path: string, payload: any): void {
 
     }
 

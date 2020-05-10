@@ -8,6 +8,15 @@ interface Request {
 
 export type RequestMethod = 'get' | 'put' | 'post' | 'delete';
 
+export type storageRequestMethod = 'get'
+                                    | 'put'
+                                    | 'post'
+                                    | 'delete'
+                                    | 'getChild'
+                                    | 'putChild'
+                                    | 'postChild'
+                                    | 'deleteChild';
+
 export interface IDataInstances {
     [key: string]: DataStorageFactory
 };

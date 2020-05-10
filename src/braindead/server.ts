@@ -9,6 +9,7 @@ import {
     ResponseStatus,
     ResponseData,
     ParsedRequest,
+    storageRequestMethod,
 } from './model';
 import { dataInstances } from './data-instances';
 import { DataStorageFactory } from './DataStorageFactory';
@@ -29,7 +30,7 @@ const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void
     const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
     // if (!isStorageExist && !isFileStorageExist && method !== 'post') {
     if (!isStorageExist) {
-        if (isFileStorageExist || method === 'post') {
+        if (isFileStorageExist || method === 'post') {      // same for put?????
             dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
         }
         else {
@@ -38,17 +39,20 @@ const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void
     }
 }
 
-const handleRequest: HandleRequest = (method, req) => {
+const handleRequest: HandleRequest = (requestMethod, req) => {
     const parsedRequest = parseEndpoint(req.params[0]);
     let data: any;
     let response: ResponseData = <any>{};
+    const methodName: storageRequestMethod = parsedRequest.propertiesPath
+        ? <storageRequestMethod>`${requestMethod}Child` : requestMethod;
 
     try {
-        verifyDataStorage(parsedRequest.storage, method);
+        verifyDataStorage(parsedRequest.storage, requestMethod);
         const storage = dataInstances[parsedRequest.storage];
+
         data = parsedRequest.propertiesPath
-            ? storage[method + 'Child'](parsedRequest.propertiesPath, req.body)
-            : storage[method](req.body);
+            ? storage[methodName](parsedRequest.propertiesPath, req.body)
+            : (<any>storage)[methodName](req.body);
         response.status = ResponseStatus.ok;
 
         if (data !== undefined) {
