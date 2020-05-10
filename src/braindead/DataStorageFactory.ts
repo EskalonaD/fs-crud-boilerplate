@@ -3,18 +3,16 @@ import * as _ from 'lodash';
 
 import { dataInstances } from './data-instances';
 import { config } from './configuration';
-// import { DATA_STORAGE_PATH } from './paths';
+
 
 export class DataStorageFactory {
-    constructor(private name: string) { // schema IS base data // schema is object for now
+    constructor(private name: string) {
 
         // const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
         this.filePath = `${config.data_storage_path}/${this.name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
-            // : fs.existsSync(baseFilePath)       // encapsulate in method, maybe remove;
-            // ? JSON.parse(fs.readFileSync(baseFilePath, 'utf8'))
             : {};
 
         if (!fs.existsSync(this.filePath)) fs.writeFileSync(this.filePath, '{}', 'utf8');
@@ -58,6 +56,8 @@ export class DataStorageFactory {
     private idGen(): number {
         return Math.trunc(Math.random() * 10 ** 16);
     }
+
+    // mb id will be passed in req.body or req.header check it in some CRUD materials.
 
     post(payload: any): void {
         this.data[this.idGen()] = payload;
