@@ -59,11 +59,14 @@ export class DataStorageFactory {
 
     // mb id will be passed in req.body or req.header check it in some CRUD materials.
 
-    post(payload: any): void {
+    post(payload: any): void {  // {${id}: payload} or [{id: ${id}, ${payloadName}: payload}] ????? should i create array and how to figure if its gonna be an array or should it be always an object?? check crud-article
+
+
+    //return id-ed payload back?! watch video
         this.data[this.idGen()] = payload;
     }
 
-    put(payload: any): void {
+    put(payload: any): void {       // if payload  deepEqual 'route' property - update route property. if not - rotate (find correct word for 'перебрать массив'), find payload and update it. if there is no payload.id - throw error;
         this.data = payload
     }
 

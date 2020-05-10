@@ -72,7 +72,7 @@ const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
     console.log(endpoint);
 
-    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)[0];
+    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)[0]; // add regexp for api/storage case
     if (parsedStorage) {
         parsedRequest.storage = parsedStorage;
         parsedRequest.propertiesPath = endpoint.replace(`/${parsedStorage}/`, '').replace(/\/$/, '');

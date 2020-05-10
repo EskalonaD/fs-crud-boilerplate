@@ -1,6 +1,7 @@
 /** view issues
 
 /** business logic issues
+modify readme
 
 /** technical logic issues
 create backup system
@@ -15,7 +16,11 @@ add responses in server.ts
 remove nodemon.json??s
 check which data-folder is really needed
 fill paths file
-create documentation in code or in some doc-file
+create documentation in code or in some doc-file/readme
+
+use simple query param for searching like /?name=${name}
+
+
 
 /** Bugs issues
 
