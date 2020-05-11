@@ -29,13 +29,13 @@ export class DataStorageFactory {
             fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8');
         }
 
-        this._data = remoteData;
+        this._data = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
         return this._data;
     }
 
     set data(value: any) {
-        fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8')
-        this._data = value; // mb will work w\o this line??
+        this._data = value;
+        this.data;
     }
 
     private validateChildEndpoint(props: string[]): void {
@@ -192,7 +192,7 @@ export class DataStorageFactory {
             objToUpdate.data = payload.data;
         }
         else {
-            const dataParent = _.get(this.data, props.slice(0, props.length - 1));
+            const dataParent = _.get(this.data, props.slice(0, props.length - 1), this.data);
 
             dataParent[props[props.length - 1]] = payload;
         }

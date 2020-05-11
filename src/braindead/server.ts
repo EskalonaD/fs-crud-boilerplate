@@ -9,14 +9,15 @@ import { handleRequest } from './functions';
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({type: 'application/json'}));
+app.use(bodyParser.text({type: 'text/plain'}));
 
 if (config.test_mode || config.frontend_mode) {
     app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
 }
 
 //res.json instead of res.send ?!
-app.route('/api/*')
+app.route('/api/*') // check '/api/' request
     .get((req, res) => {
         const responseData = handleRequest('get', req);
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
@@ -26,7 +27,10 @@ app.route('/api/*')
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .put((req, res) => {
+        console.log(req.params);
+
         const responseData = handleRequest('put', req);
+        console.log(responseData);
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .delete((req, res) => {

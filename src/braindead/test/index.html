@@ -3,12 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>fs-crud-boilerplate test</title>
+    <link rel="stylesheet" href="./index.css">
 </head>
 <body>
-    some content
-    <form action='/quotes/1' method='POST'>
-    <input type="text" name='random thing'><button type='submit'>submit</button>
-    </form>
+    <div class="wrapper">
+        <h1>Test</h1>
+        <div class="content">
+            <div class="endpoint">
+                <p>Insert desirable endpoint:</p>
+                <input type="text" value="/api/" id="endpoint">
+            </div>
+            <div class="method">
+                <p>Insert desirable endpoint:</p>
+                <input type="text" id="method">
+                <br/>
+            </div>
+            <div class="payload">
+                <p>Insert desirable payload:</p>
+                <textarea id="payload"></textarea>
+                <br/>
+            </div>
+            <div class="button">
+                <button class="test" id="button">Test app</button>
+            </div>
+            <div class="output">
+                <p>Output</p>
+                <textarea id="output" disabled></textarea>
+
+            </div>
+        </div>
+
+    </div>
+    <script src="./index.js"></script>
 </body>
 </html>
