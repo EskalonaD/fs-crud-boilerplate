@@ -11,17 +11,18 @@ import {
 } from "./model";
 import { dataInstances } from "./data-instances";
 import { DataStorageFactory } from "./DataStorageFactory";
+import { config } from './configuration';
 
 
-const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
-    const isStorageExist = dataInstances.hasOwnProperty(dataStorageName);
-    const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
+const verifyDataStorage = (storageName: string, method: RequestMethod): void => {
+    const isStorageExist = dataInstances.hasOwnProperty(storageName);
+    const isFileStorageExist = fs.existsSync(`${config.data_storage_path}/${storageName}.json`);
     if (!isStorageExist) {
         if (isFileStorageExist || ['post', 'put'].includes(method)) {
-            dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
+            dataInstances[storageName] = new DataStorageFactory(storageName);
         }
         else {
-            throw new Error;
+            throw new Error('Storage does not exist');
         }
     }
 }

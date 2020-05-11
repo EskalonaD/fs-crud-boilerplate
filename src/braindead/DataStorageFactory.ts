@@ -43,7 +43,7 @@ export class DataStorageFactory {
 
         props.forEach((el: any, i: number) => {
             if (i !== props.length - 1 && typeof data[el] !== 'object') {
-                throw new Error;
+                throw new Error('Endpoint does not exist');
             }
 
             data = data[el];
@@ -187,7 +187,7 @@ export class DataStorageFactory {
 
         if (Array.isArray(data)) {
             const objToUpdate: postedValue = data.find((el: postedValue) => payload.id === el.id);
-            if (!objToUpdate) throw new Error;
+            if (!objToUpdate) throw new Error('Value to update not found');
 
             objToUpdate.data = payload.data;
         }
