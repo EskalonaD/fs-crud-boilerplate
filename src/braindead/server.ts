@@ -13,6 +13,7 @@ import {
 } from './model';
 import { dataInstances } from './data-instances';
 import { DataStorageFactory } from './DataStorageFactory';
+import { config } from './configuration';
 
 
 const app = express();
@@ -20,9 +21,11 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {        // app use static???
-    res.sendFile(`${__dirname}/frontend'/index.html`);
-});
+if (config.frontend_path) {
+    app.get('/', (req, res) => {        // app use static???
+        res.sendFile(`${__dirname}/frontend'/index.html`);
+    });
+}
 
 //move funtions to class? middlewares?? functions-folder??
 const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
@@ -59,7 +62,7 @@ const handleRequest: HandleRequest = (requestMethod, req) => {
             response.data = data;
         }
     }
-    catch(e) {
+    catch (e) {
         response.status = ResponseStatus.error;
         response.errorMessage = e.message; // or e.name?????
     }

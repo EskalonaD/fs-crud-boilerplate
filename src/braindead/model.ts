@@ -42,3 +42,11 @@ export interface postedValue {
     id: number;
     data: any;
 }
+
+export interface ConfigurationObject {
+    data_storage_path: string;
+    backup_storage_path: string;
+    backup: boolean,
+    auth: boolean,
+    frontend_path: string | null;
+}
