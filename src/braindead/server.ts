@@ -26,10 +26,7 @@ app.route('/api/*')
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .put((req, res) => {
-        console.log(req.params);
-
         const responseData = handleRequest('put', req);
-        console.log(responseData);
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .delete((req, res) => {
