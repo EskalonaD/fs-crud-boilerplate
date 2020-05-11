@@ -22,10 +22,9 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// if (config.test_mode || config.frontend_mode) {
-//     app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
-// }
-
+if (config.test_mode || config.frontend_mode) {
+    app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
+}
 
 //move funtions to class? middlewares?? functions-folder??
 const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
@@ -33,7 +32,7 @@ const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void
     const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
     // if (!isStorageExist && !isFileStorageExist && method !== 'post') {
     if (!isStorageExist) {
-        if (isFileStorageExist || method === 'post') {      // same for put?????
+        if (isFileStorageExist || ['post', 'put'].includes(method)) {
             dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
         }
         else {
@@ -73,14 +72,16 @@ const handleRequest: HandleRequest = (requestMethod, req) => {
 // '/api/' parsing??? ignore??
 const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
+    console.log('endpoint');
     console.log(endpoint);
 
-    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)?.[0]; // add regexp for api/storage case
+    const parsedStorage = endpoint?.match(/.*?(?=\/)/)?.[0]; // add regexp for api/storage case
     console.log(parsedStorage)
     if (parsedStorage) {
         parsedRequest.storage = parsedStorage;
-        parsedRequest.propertiesPath = endpoint.replace(`/${parsedStorage}/`, '').replace(/\/$/, '');
-
+        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '').replace(/\/$/, '');
+        console.log('parsed')
+        console.log(parsedRequest.propertiesPath);
         return parsedRequest;
     }
 
@@ -88,35 +89,21 @@ const parseEndpoint: RequestParse = (endpoint) => {
     return parsedRequest;
 };
 
-app.route('*')  // /api/* instead??? /api/:param + req.params[1]???
-    .post((req, res) => {
-        console.log('post', req.body);
-        console.log('post', req.params);
-        const responseData = handleRequest('post', req);
-
-        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
-    })
+app.route('/api/*')
     .get((req, res) => {
-        console.log('get', req.body);
+        console.log('get', config.test_mode || config.frontend_mode);
         console.log('get', req.params);
-        // return res.status(200).send('1');
-
-        // TODO: add response to /favicon.ico
-        if (req.params[0] === '/') {
-            if (config.test_mode || config.frontend_mode) {
-                return res.status(ResponseStatus.ok)
-                    .sendFile(config.test_mode ? TEST_PATH : config.frontend_path);
-            }
-            else {
-                return res.status(ResponseStatus.error).send('no data provided')
-            }
-        }
-
-        // if (['/', '/favicon.ico'].includes(req.params[0])) return;
 
         const responseData = handleRequest('get', req);
 
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);       //res.json instead of res.send ?!
+    })
+    .post((req, res) => {
+        console.log('post', req.body);
+        console.log('post', req.params[0]);
+        const responseData = handleRequest('post', req);
+
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .put((req, res) => {
         console.log('put', req.body);
