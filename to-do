@@ -1,28 +1,36 @@
 /** view issues
 
 /** business logic issues
+modify readme
 
 /** technical logic issues
 create backup system
-create classes
 move logic to folders
 add documentation on features;
-add crud logic directly in class????
 add appropriate name to errors
 encapsulate request handlers in separate module/class??    //utilsClass???
 test server's ability to handle different kind of request and remove consoles and comments;
 add responses in server.ts
 remove nodemon.json??s
+<<<<<<< HEAD
 check which data-folder is really needed
 fill paths file
 add documentation
+=======
+create documentation in code or in some doc-file/readme
+add authorization middleware
+use simple query param for searching like /?name=${name}
+check isEqual for correct equality of multiple layer objects
+update front-end for GUI for testing purpose (textarea/form)
+check how express.static works with dist/ or dist/*
+move model.ts to model.d.ts
+>>>>>>> dev
 
 /** Bugs issues
 
 /** final changes issues
 
 
-
-
 /** Misc
 mby fixes in nodemon will be required later
+change package.json project descripitons/urls/etc

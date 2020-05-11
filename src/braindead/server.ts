@@ -1,104 +1,40 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import fs from 'fs';
 
-import {
-    RequestParse,
-    RequestMethod,
-    HandleRequest,
-    ResponseStatus,
-    ResponseData,
-    ParsedRequest,
-} from './model';
-import { dataInstances } from './data-instances';
-import { DataStorageFactory } from './DataStorageFactory';
+import { config } from './configuration';
+import { TEST_PATH } from './constants';
+import { handleRequest } from './functions';
+
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({type: 'application/json'}));
+app.use(bodyParser.text({type: 'text/plain'}));
 
-app.get('/', (req, res) => {
-    res.sendFile(`${__dirname}/frontend'/index.html`);
-});
-
-const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
-    const isStorageExist = dataInstances.hasOwnProperty(dataStorageName);
-    const isFileStorageExist = fs.existsSync(`${__dirname}/data/${dataStorageName}.json`);
-    if (!isStorageExist) {
-        if (isFileStorageExist || method === 'post') {
-            dataInstances[dataStorageName] = new DataStorageFactory(dataStorageName);
-        }
-        else {
-            throw new Error;
-        }
-    }
+if (config.test_mode || config.frontend_mode) {
+    app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
 }
 
-const handleRequest: HandleRequest = (method, req) => {
-    const parsedRequest = parseEndpoint(req.params[0]);
-    let data: any;
-    let response: ResponseData = <any>{};
-
-    try {
-        verifyDataStorage(parsedRequest.storage, method);
-        const storage = dataInstances[parsedRequest.storage];
-        data = parsedRequest.propertiesPath
-            ? storage[method + 'Child'](parsedRequest.propertiesPath, req.body)
-            : storage[method](req.body);
-        response.status = ResponseStatus.ok;
-
-        if (data !== undefined) {
-            response.data = data;
-        }
-    }
-    catch(e) {
-        response.status = ResponseStatus.error;
-        response.errorMessage = e.message;
-    }
-
-    return response;
-};
-
-const parseEndpoint: RequestParse = (endpoint) => {
-    const parsedRequest: ParsedRequest = <any>{}
-    console.log(endpoint);
-
-    const parsedStorage = endpoint?.match(/^.*?\//)[0];
-    if (parsedStorage) {
-        parsedRequest.storage = parsedStorage;
-        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '');
-
-        return parsedRequest;
-    }
-
-    parsedRequest.storage = endpoint;
-    return parsedRequest;
-};
-
-app.route('*')
-    .post((req, res) => {
-        console.log('post', req.body);
-        console.log('post', req.params);
-        const responseData = handleRequest('post', req);
-    })
+app.route('/api/*')
     .get((req, res) => {
-        console.log('get', req.body);
-        console.log('get', req.params);
         const responseData = handleRequest('get', req);
-
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
+    })
+    .post((req, res) => {
+        const responseData = handleRequest('post', req);
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .put((req, res) => {
-        console.log('put', req.body);
-        console.log('put', req.params);
-        const responseData = handleRequest('put', req);
+        console.log(req.params);
 
+        const responseData = handleRequest('put', req);
+        console.log(responseData);
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
     })
     .delete((req, res) => {
-        console.log('delete', req.body);
-        console.log('delete', req.params);
         const responseData = handleRequest('delete', req);
+        res.status(responseData.status).send(responseData.errorMessage || responseData.data);
+    });
 
-    })
-
-app.listen(3000, () => console.log('on3000'));
+app.listen(config.port, () => console.log(`on ${config.port}`));
