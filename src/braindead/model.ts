@@ -49,4 +49,5 @@ export interface ConfigurationObject {
     backup: boolean,
     auth: boolean,
     frontend_path: string | null;
+    test_mode: boolean;
 }

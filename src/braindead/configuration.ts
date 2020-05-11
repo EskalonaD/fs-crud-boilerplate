@@ -6,4 +6,5 @@ export const config: ConfigurationObject = {
     backup: false,
     auth: false,
     frontend_path: `${__dirname}/front-end/index.html`,
+    test_mode: true,
 }
