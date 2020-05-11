@@ -14,24 +14,18 @@ import {
 import { dataInstances } from './data-instances';
 import { DataStorageFactory } from './DataStorageFactory';
 import { config } from './configuration';
+import { TEST_PATH } from './constants';
 
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//check position: mby should go after .get(*); // resolve conflicts with .get(*);
-if (config.test_mode) {
-    app.get('/', (req, res) => {        // app use static???
-        res.sendFile(`${__dirname}/test/index.html`);
-    });
-}
-else if (config.frontend_path) {
-    app.get('/', (req, res) => {        // app use static???
-        res.sendFile(config.frontend_path);
-    });
-}
+// if (config.test_mode || config.frontend_mode) {
+//     app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
+// }
+
 
 //move funtions to class? middlewares?? functions-folder??
 const verifyDataStorage = (dataStorageName: string, method: RequestMethod): void => {
@@ -70,7 +64,7 @@ const handleRequest: HandleRequest = (requestMethod, req) => {
     }
     catch (e) {
         response.status = ResponseStatus.error;
-        response.errorMessage = e.message; // or e.name?????
+        response.errorMessage = e.message;
     }
 
     return response;
@@ -81,7 +75,8 @@ const parseEndpoint: RequestParse = (endpoint) => {
     const parsedRequest: ParsedRequest = <any>{}
     console.log(endpoint);
 
-    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)[0]; // add regexp for api/storage case
+    const parsedStorage = endpoint?.match(/(?<=\/).*?(?=\/)/)?.[0]; // add regexp for api/storage case
+    console.log(parsedStorage)
     if (parsedStorage) {
         parsedRequest.storage = parsedStorage;
         parsedRequest.propertiesPath = endpoint.replace(`/${parsedStorage}/`, '').replace(/\/$/, '');
@@ -93,7 +88,7 @@ const parseEndpoint: RequestParse = (endpoint) => {
     return parsedRequest;
 };
 
-app.route('*')
+app.route('*')  // /api/* instead??? /api/:param + req.params[1]???
     .post((req, res) => {
         console.log('post', req.body);
         console.log('post', req.params);
@@ -104,6 +99,21 @@ app.route('*')
     .get((req, res) => {
         console.log('get', req.body);
         console.log('get', req.params);
+        // return res.status(200).send('1');
+
+        // TODO: add response to /favicon.ico
+        if (req.params[0] === '/') {
+            if (config.test_mode || config.frontend_mode) {
+                return res.status(ResponseStatus.ok)
+                    .sendFile(config.test_mode ? TEST_PATH : config.frontend_path);
+            }
+            else {
+                return res.status(ResponseStatus.error).send('no data provided')
+            }
+        }
+
+        // if (['/', '/favicon.ico'].includes(req.params[0])) return;
+
         const responseData = handleRequest('get', req);
 
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);       //res.json instead of res.send ?!
@@ -121,6 +131,6 @@ app.route('*')
         const responseData = handleRequest('delete', req);
 
         res.status(responseData.status).send(responseData.errorMessage || responseData.data);
-    })
+    });
 
-app.listen(3000, () => console.log('on3000'));
+app.listen(config.port, () => console.log(`on ${config.port}`));

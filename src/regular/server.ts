@@ -7,6 +7,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));   // app use static???
 app.use(bodyParser.json());
+app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));
 
 const a = new DataStorageFactory('users'); // put to another file?
 

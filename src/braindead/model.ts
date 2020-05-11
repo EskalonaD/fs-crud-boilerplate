@@ -48,6 +48,8 @@ export interface ConfigurationObject {
     backup_storage_path: string;
     backup: boolean,
     auth: boolean,
+    frontend_mode: boolean;
     frontend_path: string | null;
     test_mode: boolean;
+    port: number;
 }

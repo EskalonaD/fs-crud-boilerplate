@@ -5,6 +5,8 @@ export const config: ConfigurationObject = {
     backup_storage_path: `${__dirname}/backup`,
     backup: false,
     auth: false,
-    frontend_path: `${__dirname}/UI/index.html`,
+    frontend_mode: false,
+    frontend_path: null,
     test_mode: true,
+    port: 3000,
 }
