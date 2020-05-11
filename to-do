@@ -18,6 +18,7 @@ use simple query param for searching like /?name=${name}
 check isEqual for correct equality of multiple layer objects
 update front-end for GUI for testing purpose (textarea/form)
 check how express.static works with dist/ or dist/*
+move model.ts to model.d.ts
 
 /** Bugs issues
 

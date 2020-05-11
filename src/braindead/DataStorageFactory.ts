@@ -9,7 +9,6 @@ import { postedValue } from './model';
 export class DataStorageFactory {
     constructor(private name: string) {
 
-        // const baseFilePath: string = `${__dirname}/base-data/${name}.json`;
         this.filePath = `${config.data_storage_path}/${this.name}.json`;
 
         this._data = fs.existsSync(this.filePath)
@@ -25,21 +24,18 @@ export class DataStorageFactory {
     get data() {
         const remoteData = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
 
-
-        // need for handling storage[prop] = data cases, cause in that cases getter is used instead of post;
+        // needed for handling storage[prop] = data cases, cause in that cases getter is used instead of post;
         if (!_.isEqual(this._data, remoteData)) {
             fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8');
         }
 
         this._data = remoteData;
-        console.log('data parsed');
         return this._data;
     }
 
     set data(value: any) {
         fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2), 'utf8')
         this._data = value; // mb will work w\o this line??
-        console.log('data saved')
     }
 
     private validateChildEndpoint(props: string[]): void {
@@ -84,7 +80,7 @@ export class DataStorageFactory {
         }
 
         if (isFormatted) {
-            //check is id is formatted in right way. Format if needed;
+            //check if id is formatted in right way. Format if needed;
             data.id = typeof data.id !== 'number'
                 ? this.generateId()
                 : data.id;
@@ -176,9 +172,6 @@ export class DataStorageFactory {
 
         return objToStore;
     }
-
-
-    // if payload  deepEqual 'route' property - update route property. if not - rotate (find correct word for 'перебрать массив'), find payload and update it. if there is no payload.id - throw error;
 
     /**
      * @param path doesn't include id of updated element

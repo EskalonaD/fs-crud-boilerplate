@@ -1,5 +1,6 @@
 import { ConfigurationObject } from "./model";
 
+
 export const config: ConfigurationObject = {
     data_storage_path: `${__dirname}/data`,
     backup_storage_path: `${__dirname}/backup`,
