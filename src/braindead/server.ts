@@ -21,13 +21,14 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));   // app use static???
 app.use(bodyParser.json());
 
-if(config.test_mode) {
-    app.get('/', (req, res) => {        // app use static???    //check position: mby should go after .get(*); // resolve conflicts with .get(*);
+//check position: mby should go after .get(*); // resolve conflicts with .get(*);
+if (config.test_mode) {
+    app.get('/', (req, res) => {        // app use static???
         res.sendFile(`${__dirname}/test/index.html`);
     });
 }
 else if (config.frontend_path) {
-    app.get('/', (req, res) => {        // app use static???    //check position: mby should go after .get(*); // resolve conflicts with .get(*);
+    app.get('/', (req, res) => {        // app use static???
         res.sendFile(config.frontend_path);
     });
 }
