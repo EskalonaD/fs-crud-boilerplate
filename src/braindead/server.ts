@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 if (config.frontend_path) {
     app.get('/', (req, res) => {        // app use static???
-        res.sendFile(`${__dirname}/frontend'/index.html`);
+        res.sendFile(config.frontend_path);
     });
 }
 

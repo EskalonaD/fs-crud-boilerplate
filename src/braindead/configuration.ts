@@ -5,5 +5,5 @@ export const config: ConfigurationObject = {
     backup_storage_path: `${__dirname}/backup`,
     backup: false,
     auth: false,
-    frontend_path: `${__dirname}/front-end`
+    frontend_path: `${__dirname}/front-end/index.html`,
 }
