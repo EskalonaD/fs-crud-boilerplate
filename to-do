@@ -20,6 +20,10 @@ create documentation in code or in some doc-file/readme
 
 use simple query param for searching like /?name=${name}
 
+think about data-storage structure. how can array/object structure be combined?! mb initially array but if some 'propname' will go transfer it to obj?
+
+
+check isEqual for correct equality of multiple layer objects
 
 
 /** Bugs issues

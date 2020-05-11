@@ -37,3 +37,8 @@ export interface ResponseData {
     errorMessage?: string;
     data: any;
 };
+
+export interface postedValue {
+    id: number;
+    data: any;
+}
