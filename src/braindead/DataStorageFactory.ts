@@ -2,14 +2,14 @@ import fs from 'fs';
 import * as _ from 'lodash';
 
 import { dataInstances } from './data-instances';
-import { config } from './configuration';
+import { configuration } from './configuration';
 import { postedValue } from './model';
 
-
+// use Proxy to add backup feature????
 export class DataStorageFactory {
     constructor(private name: string) {
 
-        this.filePath = `${config.data_storage_path}/${this.name}.json`;
+        this.filePath = `${configuration.data_storage_path}/${this.name}.json`;
 
         this._data = fs.existsSync(this.filePath)
             ? JSON.parse(fs.readFileSync(this.filePath, 'utf8'))

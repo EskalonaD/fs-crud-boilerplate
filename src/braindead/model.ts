@@ -53,4 +53,14 @@ export interface ConfigurationObject {
     frontend_path: string | null;
     test_mode: boolean;
     port: number;
+    backupCapacity: number;
+}
+
+export interface Backup {
+    maxBackupAmount: number;
+    currentBackupAmount: number;
+    lastBackupDate: Date;
+    currentDate: Date;
+    backupData: (name: string, data: object) => void;
+    backupStoragePath: string;
 }

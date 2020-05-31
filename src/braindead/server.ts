@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import { config } from './configuration';
+import { configuration as config } from './configuration';
 import { TEST_PATH } from './constants';
 import { handleRequest } from './functions';
 
@@ -10,7 +10,9 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({type: 'application/json'}));
-app.use(bodyParser.text({type: 'text/plain'}));
+app.use(bodyParser.text({type: 'text/plain'})); //not need?
+
+// const backupService = new Backup
 
 if (config.test_mode || config.frontend_mode) {
     app.use(express.static(config.test_mode ? TEST_PATH : config.frontend_path));

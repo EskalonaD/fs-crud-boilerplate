@@ -11,7 +11,7 @@ import {
 } from "./model";
 import { dataInstances } from "./data-instances";
 import { DataStorageFactory } from "./DataStorageFactory";
-import { config } from './configuration';
+import { configuration as config } from './configuration';
 
 
 const verifyDataStorage = (storageName: string, method: RequestMethod): void => {
@@ -26,6 +26,21 @@ const verifyDataStorage = (storageName: string, method: RequestMethod): void => 
         }
     }
 }
+
+const parseEndpoint: RequestParse = (endpoint) => {
+    const parsedRequest: ParsedRequest = <any>{}
+    const parsedStorage = endpoint?.match(/.*?(?=\/)/)?.[0];
+
+    if (parsedStorage) {
+        parsedRequest.storage = parsedStorage;
+        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '').replace(/\/$/, '');
+
+        return parsedRequest;
+    }
+
+    parsedRequest.storage = endpoint;
+    return parsedRequest;
+};
 
 export const handleRequest: HandleRequest = (requestMethod, req) => {
     const parsedRequest = parseEndpoint(req.params[0]);
@@ -54,19 +69,4 @@ export const handleRequest: HandleRequest = (requestMethod, req) => {
     }
 
     return response;
-};
-
-const parseEndpoint: RequestParse = (endpoint) => {
-    const parsedRequest: ParsedRequest = <any>{}
-    const parsedStorage = endpoint?.match(/.*?(?=\/)/)?.[0];
-
-    if (parsedStorage) {
-        parsedRequest.storage = parsedStorage;
-        parsedRequest.propertiesPath = endpoint.replace(`${parsedStorage}/`, '').replace(/\/$/, '');
-
-        return parsedRequest;
-    }
-
-    parsedRequest.storage = endpoint;
-    return parsedRequest;
 };
